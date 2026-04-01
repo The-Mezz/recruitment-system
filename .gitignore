@@ -1,0 +1,25 @@
+# ===== BACKEND (Java / Maven) =====
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+.mvn/wrapper/maven-wrapper.jar
+spring-boot-devtools.properties
+
+# ===== FRONTEND (Node / Vite) =====
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ===== UPLOADS (user data, don't share) =====
+uploads/
+
+# ===== IDE / OS =====
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.swp
