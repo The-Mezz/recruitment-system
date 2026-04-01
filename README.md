@@ -10,6 +10,24 @@ A full-stack recruitment platform built with **Spring Boot** (backend) and **Rea
 | Database | MariaDB (via XAMPP) |
 | Frontend | React 18, Vite, React Router, Axios, Recharts |
 
+### 🧩 How the Frontend Stack Works
+
+```
+Node.js  →  the ENGINE that runs the tools
+   └── npm  →  installs packages
+        └── Vite  →  the BUILD TOOL / dev server
+              └── React  →  the UI FRAMEWORK (what you see)
+```
+
+| Part | Role |
+|------|------|
+| **Node.js** | The engine under the hood — required to run dev tools |
+| **npm** | The package manager — installs all dependencies |
+| **Vite** | The build system — runs the dev server and bundles for production |
+| **React** | The actual UI framework — components, pages, routing |
+
+> ⚠️ **Node.js is only needed during development.** The app itself is a React app that compiles to plain HTML/CSS/JS. Your binome needs Node.js installed to run `npm install && npm run dev`.
+
 ## Prerequisites
 
 Make sure you have installed:
