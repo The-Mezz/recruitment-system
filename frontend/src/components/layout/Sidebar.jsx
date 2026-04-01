@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { Briefcase, LayoutDashboard, FileText, Users, Calendar, FolderOpen, LogOut } from 'lucide-react';
 
 export default function Sidebar() {
   const { user, logout, isAdmin, isRecruiter, isCandidate } = useAuth();
+  const { t } = useLang();
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path ? 'sidebar-link active' : 'sidebar-link';
@@ -16,55 +18,55 @@ export default function Sidebar() {
       </div>
 
       <div className="sidebar-section">
-        <div className="sidebar-section-title">Main</div>
+        <div className="sidebar-section-title">{t('sidebar.main')}</div>
         <Link to="/dashboard" className={isActive('/dashboard')}>
           <LayoutDashboard size={20} className="link-icon" />
-          Dashboard
+          {t('sidebar.dashboard')}
         </Link>
         <Link to="/jobs" className={isActive('/jobs')}>
           <Briefcase size={20} className="link-icon" />
-          Job Offers
+          {t('sidebar.jobOffers')}
         </Link>
       </div>
 
       {isCandidate && (
         <div className="sidebar-section">
-          <div className="sidebar-section-title">Candidate</div>
+          <div className="sidebar-section-title">{t('sidebar.candidate')}</div>
           <Link to="/my-applications" className={isActive('/my-applications')}>
             <FileText size={20} className="link-icon" />
-            My Applications
+            {t('sidebar.myApplications')}
           </Link>
           <Link to="/my-interviews" className={isActive('/my-interviews')}>
             <Calendar size={20} className="link-icon" />
-            My Interviews
+            {t('sidebar.myInterviews')}
           </Link>
           <Link to="/documents" className={isActive('/documents')}>
             <FolderOpen size={20} className="link-icon" />
-            My Documents
+            {t('sidebar.myDocuments')}
           </Link>
         </div>
       )}
 
       {isRecruiter && (
         <div className="sidebar-section">
-          <div className="sidebar-section-title">Recruiter</div>
+          <div className="sidebar-section-title">{t('sidebar.recruiter')}</div>
           <Link to="/manage-applications" className={isActive('/manage-applications')}>
             <FileText size={20} className="link-icon" />
-            Applications
+            {t('sidebar.applications')}
           </Link>
           <Link to="/interviews" className={isActive('/interviews')}>
             <Calendar size={20} className="link-icon" />
-            Interviews
+            {t('sidebar.interviews')}
           </Link>
         </div>
       )}
 
       {isAdmin && (
         <div className="sidebar-section">
-          <div className="sidebar-section-title">Admin</div>
+          <div className="sidebar-section-title">{t('sidebar.admin')}</div>
           <Link to="/users" className={isActive('/users')}>
             <Users size={20} className="link-icon" />
-            Users
+            {t('sidebar.users')}
           </Link>
         </div>
       )}
@@ -77,7 +79,7 @@ export default function Sidebar() {
           <div className="user-name">{user?.firstName} {user?.lastName}</div>
           <div className="user-role">{user?.role?.toLowerCase()}</div>
         </div>
-        <button className="btn btn-icon btn-secondary" onClick={logout} title="Logout">
+        <button className="btn btn-icon btn-secondary" onClick={logout} title={t('sidebar.logout')}>
           <LogOut size={16} />
         </button>
       </div>

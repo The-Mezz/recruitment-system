@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { createJobOffer, updateJobOffer, getJobOffer } from '../../api/axios';
 import { Save, ArrowLeft } from 'lucide-react';
 
@@ -8,6 +9,7 @@ export default function JobFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLang();
   const isEdit = !!id;
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', location: '', contractType: '', salary: '', requirements: '', expirationDate: '' });
@@ -38,23 +40,27 @@ export default function JobFormPage() {
 
   return (
     <>
-      <button className="btn btn-secondary mb-2" onClick={() => navigate('/jobs')}><ArrowLeft size={16} /> Back</button>
+      <button className="btn btn-secondary mb-2" onClick={() => navigate('/jobs')}>
+        <ArrowLeft size={16} /> {t('jobs.backToJobs')}
+      </button>
       <div className="card" style={{ maxWidth: 700 }}>
-        <h2 style={{ marginBottom: '1.5rem' }}>{isEdit ? 'Edit Job Offer' : 'Post New Job Offer'}</h2>
+        <h2 style={{ marginBottom: '1.5rem' }}>
+          {isEdit ? t('jobs.editJobTitle') : t('jobs.newJobTitle')}
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Job Title *</label>
-            <input name="title" className="form-input" placeholder="e.g. Senior React Developer" value={form.title} onChange={handleChange} required />
+            <label>{t('jobs.titleLabel')} *</label>
+            <input name="title" className="form-input" placeholder={t('jobs.titlePlaceholder')} value={form.title} onChange={handleChange} required />
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Location</label>
-              <input name="location" className="form-input" placeholder="e.g. Paris, France" value={form.location} onChange={handleChange} />
+              <label>{t('jobs.locationLabel')}</label>
+              <input name="location" className="form-input" placeholder={t('jobs.locationPlaceholder')} value={form.location} onChange={handleChange} />
             </div>
             <div className="form-group">
-              <label>Contract Type</label>
+              <label>{t('jobs.contractType')}</label>
               <select name="contractType" className="form-select" value={form.contractType} onChange={handleChange}>
-                <option value="">Select type</option>
+                <option value="">{t('jobs.selectType')}</option>
                 <option value="CDI">CDI</option>
                 <option value="CDD">CDD</option>
                 <option value="Freelance">Freelance</option>
@@ -66,8 +72,8 @@ export default function JobFormPage() {
           </div>
           <div className="form-row">
             <div className="form-group">
-              <label>Salary</label>
-              <input name="salary" type="number" className="form-input" placeholder="e.g. 65000" value={form.salary} onChange={handleChange} />
+              <label>{t('jobs.salary')}</label>
+              <input name="salary" type="number" className="form-input" placeholder={t('jobs.salaryPlaceholder')} value={form.salary} onChange={handleChange} />
             </div>
             <div className="form-group">
               <label>Expiration Date</label>
@@ -75,15 +81,15 @@ export default function JobFormPage() {
             </div>
           </div>
           <div className="form-group">
-            <label>Description</label>
-            <textarea name="description" className="form-textarea" placeholder="Describe the role, responsibilities..." value={form.description} onChange={handleChange} rows={5} />
+            <label>{t('jobs.description')}</label>
+            <textarea name="description" className="form-textarea" placeholder={t('jobs.descriptionPlaceholder')} value={form.description} onChange={handleChange} rows={5} />
           </div>
           <div className="form-group">
-            <label>Requirements</label>
-            <textarea name="requirements" className="form-textarea" placeholder="Skills, qualifications, experience..." value={form.requirements} onChange={handleChange} rows={4} />
+            <label>{t('jobs.requirements')}</label>
+            <textarea name="requirements" className="form-textarea" placeholder={t('jobs.requirementsPlaceholder')} value={form.requirements} onChange={handleChange} rows={4} />
           </div>
           <button type="submit" className="btn btn-primary btn-lg" disabled={loading}>
-            <Save size={18} /> {loading ? 'Saving...' : isEdit ? 'Update Offer' : 'Publish Offer'}
+            <Save size={18} /> {loading ? t('jobs.saving') : t('jobs.saveJob')}
           </button>
         </form>
       </div>

@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { getMyDocuments, uploadDocument, deleteDocument, downloadDocument } from '../../api/axios';
-import { Upload, Download, Trash2, FileText, File } from 'lucide-react';
+import { Upload, Download, Trash2, FileText } from 'lucide-react';
 
 export default function DocumentsPage() {
-  const { user } = useAuth();
+  const { t } = useLang();
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -43,7 +43,7 @@ export default function DocumentsPage() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this document?')) return;
+    if (!confirm(t('documents.confirmDelete'))) return;
     try { await deleteDocument(id); loadDocs(); } catch {}
   };
 
@@ -58,22 +58,22 @@ export default function DocumentsPage() {
   return (
     <>
       <div className="page-header">
-        <h1>My Documents</h1>
-        <p>Upload and manage your CV and cover letters</p>
+        <h1>{t('documents.title')}</h1>
+        <p>{t('documents.subtitle')}</p>
       </div>
 
       <div className="card mb-2">
-        <h3 style={{ marginBottom: '1rem' }}>Upload Document</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{t('documents.uploadTitle')}</h3>
         <div className="flex gap-md items-center" style={{ flexWrap: 'wrap' }}>
           <select className="form-select" value={docType} onChange={e => setDocType(e.target.value)} style={{ width: 180 }}>
-            <option value="CV">CV / Resume</option>
-            <option value="COVER_LETTER">Cover Letter</option>
-            <option value="OTHER">Other</option>
+            <option value="CV">{t('documents.cv')}</option>
+            <option value="COVER_LETTER">{t('documents.coverLetter')}</option>
+            <option value="OTHER">{t('documents.other')}</option>
           </select>
           <div className="file-upload-zone" onClick={() => fileRef.current?.click()} style={{ flex: 1, padding: '1.5rem' }}>
             <Upload size={24} style={{ color: 'var(--text-muted)', marginBottom: '0.25rem' }} />
-            <p>{uploading ? 'Uploading...' : 'Click to select a file'}</p>
-            <p className="file-types">PDF, DOC, DOCX (Max 10MB)</p>
+            <p>{uploading ? t('documents.uploading') : t('documents.clickToUpload')}</p>
+            <p className="file-types">{t('documents.fileTypes')}</p>
           </div>
           <input ref={fileRef} type="file" hidden accept=".pdf,.doc,.docx" onChange={handleUpload} />
         </div>
@@ -82,13 +82,21 @@ export default function DocumentsPage() {
       {documents.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📁</div>
-          <h3>No documents uploaded</h3>
-          <p>Upload your CV to start applying to jobs</p>
+          <h3>{t('documents.noDocuments')}</h3>
+          <p>{t('documents.uploadCv')}</p>
         </div>
       ) : (
         <div className="table-container">
           <table>
-            <thead><tr><th>File</th><th>Type</th><th>Size</th><th>Uploaded</th><th>Actions</th></tr></thead>
+            <thead>
+              <tr>
+                <th>{t('documents.file')}</th>
+                <th>{t('documents.type')}</th>
+                <th>{t('documents.size')}</th>
+                <th>{t('documents.uploaded')}</th>
+                <th>{t('documents.actions')}</th>
+              </tr>
+            </thead>
             <tbody>
               {documents.map(doc => (
                 <tr key={doc.id}>

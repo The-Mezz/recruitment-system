@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { getRecruiterApplications, updateApplicationStatus } from '../../api/axios';
+import { useLang } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function ManageApplicationsPage() {
   const [applications, setApplications] = useState([]);
   const [filter, setFilter] = useState('ALL');
   const [loading, setLoading] = useState(true);
+  const { t } = useLang();
   const navigate = useNavigate();
 
   useEffect(() => { loadApps(); }, []);
@@ -21,19 +23,27 @@ export default function ManageApplicationsPage() {
 
   const filtered = filter === 'ALL' ? applications : applications.filter(a => a.status === filter);
 
+  // Translated filter labels
+  const filterLabels = {
+    ALL: `${t('common.view')} All (${applications.length})`,
+    PENDING: `${t('dashboard.pending')} (${applications.filter(a => a.status === 'PENDING').length})`,
+    ACCEPTED: `${t('dashboard.accepted')} (${applications.filter(a => a.status === 'ACCEPTED').length})`,
+    REJECTED: `${t('dashboard.rejected')} (${applications.filter(a => a.status === 'REJECTED').length})`,
+  };
+
   if (loading) return <div className="loading-spinner"><div className="spinner" /></div>;
 
   return (
     <>
       <div className="page-header">
-        <h1>Manage Applications</h1>
-        <p>Review and manage candidate applications</p>
+        <h1>{t('manageApplications.title')}</h1>
+        <p>{t('manageApplications.subtitle')}</p>
       </div>
 
       <div className="flex gap-sm mb-2">
         {['ALL', 'PENDING', 'ACCEPTED', 'REJECTED'].map(s => (
           <button key={s} className={`btn btn-sm ${filter === s ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilter(s)}>
-            {s === 'ALL' ? `All (${applications.length})` : `${s} (${applications.filter(a => a.status === s).length})`}
+            {filterLabels[s]}
           </button>
         ))}
       </div>
@@ -41,13 +51,21 @@ export default function ManageApplicationsPage() {
       {filtered.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📋</div>
-          <h3>No applications</h3>
-          <p>No {filter !== 'ALL' ? filter.toLowerCase() : ''} applications at this time.</p>
+          <h3>{t('manageApplications.noApplications')}</h3>
         </div>
       ) : (
         <div className="table-container">
           <table>
-            <thead><tr><th>Candidate</th><th>Email</th><th>Job Offer</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <thead>
+              <tr>
+                <th>{t('manageApplications.candidate')}</th>
+                <th>{t('admin.email')}</th>
+                <th>{t('manageApplications.jobTitle')}</th>
+                <th>{t('manageApplications.status')}</th>
+                <th>{t('manageApplications.appliedDate')}</th>
+                <th>{t('common.edit')}</th>
+              </tr>
+            </thead>
             <tbody>
               {filtered.map(app => (
                 <tr key={app.id}>
@@ -60,8 +78,8 @@ export default function ManageApplicationsPage() {
                     <div className="flex gap-sm">
                       {app.status === 'PENDING' && (
                         <>
-                          <button className="btn btn-success btn-sm" onClick={() => handleStatus(app.id, 'ACCEPTED')}>Accept</button>
-                          <button className="btn btn-danger btn-sm" onClick={() => handleStatus(app.id, 'REJECTED')}>Reject</button>
+                          <button className="btn btn-success btn-sm" onClick={() => handleStatus(app.id, 'ACCEPTED')}>{t('dashboard.accepted')}</button>
+                          <button className="btn btn-danger btn-sm" onClick={() => handleStatus(app.id, 'REJECTED')}>{t('dashboard.rejected')}</button>
                         </>
                       )}
                     </div>

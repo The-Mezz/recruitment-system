@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { getMyInterviews, getRecruiterInterviews, createInterview, updateInterview, getRecruiterApplications } from '../../api/axios';
 import { Calendar, Clock, MapPin, MessageSquare, Plus } from 'lucide-react';
 
 export default function InterviewsPage() {
   const { isRecruiter, isCandidate } = useAuth();
+  const { t } = useLang();
   const [interviews, setInterviews] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,7 @@ export default function InterviewsPage() {
   };
 
   const handleComplete = async (id) => {
-    const feedback = prompt('Enter feedback for this interview:');
+    const feedback = prompt(t('interviews.feedbackPrompt'));
     if (feedback === null) return;
     try {
       await updateInterview(id, { status: 'COMPLETED', feedback });
@@ -45,7 +47,7 @@ export default function InterviewsPage() {
   };
 
   const handleCancel = async (id) => {
-    if (!confirm('Cancel this interview?')) return;
+    if (!confirm(t('interviews.cancelConfirm'))) return;
     try { await updateInterview(id, { status: 'CANCELLED' }); loadData(); } catch {}
   };
 
@@ -55,24 +57,24 @@ export default function InterviewsPage() {
     <>
       <div className="page-header flex justify-between items-center">
         <div>
-          <h1>{isCandidate ? 'My Interviews' : 'Interviews'}</h1>
-          <p>{isCandidate ? 'Your scheduled interviews' : 'Manage interview schedule'}</p>
+          <h1>{isCandidate ? t('interviews.myTitle') : t('interviews.title')}</h1>
+          <p>{isCandidate ? t('interviews.mySubtitle') : t('interviews.subtitle')}</p>
         </div>
         {isRecruiter && (
           <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
-            <Plus size={18} /> Schedule Interview
+            <Plus size={18} /> {t('interviews.scheduleNew')}
           </button>
         )}
       </div>
 
       {showForm && isRecruiter && (
         <div className="card mb-2">
-          <h3 style={{ marginBottom: '1rem' }}>Schedule New Interview</h3>
+          <h3 style={{ marginBottom: '1rem' }}>{t('interviews.scheduleTitle')}</h3>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Application</label>
+              <label>{t('interviews.application')}</label>
               <select className="form-select" value={form.applicationId} onChange={e => setForm({ ...form, applicationId: e.target.value })} required>
-                <option value="">Select application...</option>
+                <option value="">{t('interviews.selectApplication')}</option>
                 {applications.map(a => (
                   <option key={a.id} value={a.id}>{a.candidateName} — {a.jobOfferTitle}</option>
                 ))}
@@ -80,21 +82,21 @@ export default function InterviewsPage() {
             </div>
             <div className="form-row">
               <div className="form-group">
-                <label>Date & Time</label>
+                <label>{t('interviews.dateTime')}</label>
                 <input type="datetime-local" className="form-input" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} required />
               </div>
               <div className="form-group">
-                <label>Location</label>
-                <input className="form-input" placeholder="Office / Video call link" value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} />
+                <label>{t('interviews.locationLabel')}</label>
+                <input className="form-input" placeholder={t('interviews.locationPlaceholder')} value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} />
               </div>
             </div>
             <div className="form-group">
-              <label>Notes</label>
-              <textarea className="form-textarea" placeholder="Preparation notes..." value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} />
+              <label>{t('interviews.notes')}</label>
+              <textarea className="form-textarea" placeholder={t('interviews.notesPlaceholder')} value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={2} />
             </div>
             <div className="flex gap-sm">
-              <button type="submit" className="btn btn-primary">Schedule</button>
-              <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
+              <button type="submit" className="btn btn-primary">{t('interviews.schedule')}</button>
+              <button type="button" className="btn btn-secondary" onClick={() => setShowForm(false)}>{t('interviews.cancel')}</button>
             </div>
           </form>
         </div>
@@ -103,8 +105,8 @@ export default function InterviewsPage() {
       {interviews.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">📅</div>
-          <h3>No interviews</h3>
-          <p>{isCandidate ? 'No interviews scheduled yet' : 'Schedule an interview for a candidate'}</p>
+          <h3>{t('interviews.noInterviews')}</h3>
+          <p>{isCandidate ? t('interviews.noScheduledCandidate') : t('interviews.noScheduledRecruiter')}</p>
         </div>
       ) : (
         <div style={{ display: 'grid', gap: '1rem' }}>
@@ -113,7 +115,7 @@ export default function InterviewsPage() {
               <div className="flex justify-between items-center">
                 <div>
                   <h3 style={{ fontSize: '1rem', marginBottom: '0.25rem' }}>{inv.jobOfferTitle}</h3>
-                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Candidate: {inv.candidateName}</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{t('interviews.candidateLabel')} {inv.candidateName}</span>
                 </div>
                 <span className={`badge badge-${inv.status.toLowerCase()}`}>{inv.status}</span>
               </div>
@@ -124,14 +126,14 @@ export default function InterviewsPage() {
               </div>
               {inv.feedback && (
                 <div className="mt-1" style={{ background: 'var(--bg-glass)', padding: '0.75rem', borderRadius: 'var(--radius-md)', fontSize: '0.85rem' }}>
-                  <span className="flex items-center gap-sm mb-1" style={{ fontWeight: 600, color: 'var(--text-heading)' }}><MessageSquare size={14} /> Feedback</span>
+                  <span className="flex items-center gap-sm mb-1" style={{ fontWeight: 600, color: 'var(--text-heading)' }}><MessageSquare size={14} /> {t('interviews.feedback')}</span>
                   <p style={{ color: 'var(--text-secondary)' }}>{inv.feedback}</p>
                 </div>
               )}
               {isRecruiter && inv.status === 'SCHEDULED' && (
                 <div className="flex gap-sm mt-1">
-                  <button className="btn btn-success btn-sm" onClick={() => handleComplete(inv.id)}>Complete & Add Feedback</button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleCancel(inv.id)}>Cancel</button>
+                  <button className="btn btn-success btn-sm" onClick={() => handleComplete(inv.id)}>{t('interviews.complete')}</button>
+                  <button className="btn btn-danger btn-sm" onClick={() => handleCancel(inv.id)}>{t('interviews.cancelInterview')}</button>
                 </div>
               )}
             </div>

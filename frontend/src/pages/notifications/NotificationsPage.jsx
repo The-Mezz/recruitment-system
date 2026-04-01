@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { getNotifications, markAsRead, markAllAsRead } from '../../api/axios';
-import { Bell, Check, CheckCheck } from 'lucide-react';
+import { useLang } from '../../context/LanguageContext';
+import { Check, CheckCheck } from 'lucide-react';
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLang();
 
   useEffect(() => { loadNotifs(); }, []);
 
@@ -27,19 +29,21 @@ export default function NotificationsPage() {
     <>
       <div className="page-header flex justify-between items-center">
         <div>
-          <h1>Notifications</h1>
-          <p>Stay updated on your activity</p>
+          <h1>{t('notifications.title')}</h1>
+          <p>{t('notifications.subtitle')}</p>
         </div>
         {notifications.some(n => !n.isRead) && (
-          <button className="btn btn-secondary" onClick={handleReadAll}><CheckCheck size={16} /> Mark all as read</button>
+          <button className="btn btn-secondary" onClick={handleReadAll}>
+            <CheckCheck size={16} /> {t('notifications.markAllRead')}
+          </button>
         )}
       </div>
 
       {notifications.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">🔔</div>
-          <h3>No notifications</h3>
-          <p>You're all caught up!</p>
+          <h3>{t('notifications.noNotifications')}</h3>
+          <p>{t('notifications.noNotificationsDesc')}</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -54,7 +58,7 @@ export default function NotificationsPage() {
                   </div>
                 </div>
                 {!n.isRead && (
-                  <button className="btn btn-icon btn-secondary" onClick={() => handleRead(n.id)} title="Mark as read">
+                  <button className="btn btn-icon btn-secondary" onClick={() => handleRead(n.id)} title={t('notifications.markRead')}>
                     <Check size={14} />
                   </button>
                 )}

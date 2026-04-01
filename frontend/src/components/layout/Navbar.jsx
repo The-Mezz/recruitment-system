@@ -2,10 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { getUnread, getUnreadCount, markAsRead, markAllAsRead } from '../../api/axios';
 
 export default function Navbar() {
   const { user } = useAuth();
+  const { lang, toggleLang, t } = useLang();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -61,21 +63,47 @@ export default function Navbar() {
   const timeAgo = (dateStr) => {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'Just now';
-    if (mins < 60) return `${mins}m ago`;
+    if (mins < 1) return t('navbar.justNow');
+    if (mins < 60) return `${mins}m`;
     const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `${hrs}h ago`;
-    return `${Math.floor(hrs / 24)}d ago`;
+    if (hrs < 24) return `${hrs}h`;
+    return `${Math.floor(hrs / 24)}d`;
   };
 
   return (
     <nav className="navbar">
       <div className="navbar-left">
         <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-heading)' }}>
-          Welcome back, {user?.firstName} 👋
+          {t('navbar.welcomeBack')}, {user?.firstName} 👋
         </h3>
       </div>
-      <div className="navbar-right">
+      <div className="navbar-right" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+
+        {/* Language Toggle */}
+        <button
+          onClick={toggleLang}
+          title={lang === 'en' ? 'Passer en français' : 'Switch to English'}
+          style={{
+            background: 'var(--bg-glass)',
+            border: '1px solid var(--border-primary)',
+            borderRadius: 'var(--radius-md)',
+            padding: '0.35rem 0.7rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            fontSize: '0.8rem',
+            fontWeight: 600,
+            color: 'var(--text-secondary)',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent-blue)'; e.currentTarget.style.color = 'var(--accent-blue)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-primary)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+        >
+          {lang === 'en' ? '🇬🇧 EN' : '🇫🇷 FR'}
+        </button>
+
+        {/* Notifications */}
         <div ref={dropdownRef} style={{ position: 'relative' }}>
           <button className="notification-btn" onClick={handleToggle}>
             <Bell size={18} />
@@ -84,17 +112,17 @@ export default function Navbar() {
           {showDropdown && (
             <div className="notification-dropdown">
               <div className="notification-dropdown-header">
-                <h4>Notifications</h4>
+                <h4>{t('navbar.notifications')}</h4>
                 {notifications.length > 0 && (
                   <button className="btn btn-sm btn-secondary" onClick={handleMarkAll}>
-                    <Check size={14} /> Mark all read
+                    <Check size={14} /> {t('navbar.markAllRead')}
                   </button>
                 )}
               </div>
               <div className="notification-list">
                 {notifications.length === 0 ? (
                   <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                    No new notifications
+                    {t('navbar.noNotifications')}
                   </div>
                 ) : (
                   notifications.map(n => (
@@ -107,7 +135,7 @@ export default function Navbar() {
               </div>
               <div style={{ padding: '0.5rem', borderTop: '1px solid var(--border-primary)', textAlign: 'center' }}>
                 <Link to="/notifications" className="btn btn-sm btn-secondary btn-full" onClick={() => setShowDropdown(false)}>
-                  View All Notifications
+                  {t('navbar.viewAll')}
                 </Link>
               </div>
             </div>

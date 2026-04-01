@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { getDashboardStats, getMyApplications, getRecruiterApplications, getMyInterviews, getRecruiterInterviews } from '../../api/axios';
 import { Briefcase, Users, FileText, Calendar, TrendingUp, CheckCircle, Clock, XCircle } from 'lucide-react';
 
 export default function DashboardPage() {
   const { user, isAdmin, isRecruiter, isCandidate } = useAuth();
+  const { t } = useLang();
   const [stats, setStats] = useState(null);
   const [items, setItems] = useState([]);
   const [interviews, setInterviews] = useState([]);
@@ -39,8 +41,8 @@ export default function DashboardPage() {
   return (
     <>
       <div className="page-header">
-        <h1>Dashboard</h1>
-        <p>{isAdmin ? 'Platform overview' : isRecruiter ? 'Your recruitment activity' : 'Your job search progress'}</p>
+        <h1>{t('dashboard.title')}</h1>
+        <p>{isAdmin ? t('dashboard.platformOverview') : isRecruiter ? t('dashboard.recruitmentActivity') : t('dashboard.jobSearchProgress')}</p>
       </div>
 
       {(isAdmin || isRecruiter) && stats && (
@@ -48,22 +50,22 @@ export default function DashboardPage() {
           <div className="stat-card blue">
             <div className="stat-icon"><Briefcase size={22} /></div>
             <div className="stat-value">{stats.activeJobOffers}</div>
-            <div className="stat-label">Active Job Offers</div>
+            <div className="stat-label">{t('dashboard.activeJobOffers')}</div>
           </div>
           <div className="stat-card emerald">
             <div className="stat-icon"><FileText size={22} /></div>
             <div className="stat-value">{stats.totalApplications}</div>
-            <div className="stat-label">Total Applications</div>
+            <div className="stat-label">{t('dashboard.totalApplications')}</div>
           </div>
           <div className="stat-card amber">
             <div className="stat-icon"><Clock size={22} /></div>
             <div className="stat-value">{stats.pendingApplications}</div>
-            <div className="stat-label">Pending Review</div>
+            <div className="stat-label">{t('dashboard.pendingReview')}</div>
           </div>
           <div className="stat-card rose">
             <div className="stat-icon"><Calendar size={22} /></div>
             <div className="stat-value">{stats.totalInterviews}</div>
-            <div className="stat-label">Total Interviews</div>
+            <div className="stat-label">{t('dashboard.totalInterviews')}</div>
           </div>
         </div>
       )}
@@ -73,22 +75,22 @@ export default function DashboardPage() {
           <div className="stat-card blue">
             <div className="stat-icon"><FileText size={22} /></div>
             <div className="stat-value">{items.length}</div>
-            <div className="stat-label">My Applications</div>
+            <div className="stat-label">{t('dashboard.myApplications')}</div>
           </div>
           <div className="stat-card amber">
             <div className="stat-icon"><Clock size={22} /></div>
             <div className="stat-value">{items.filter(a => a.status === 'PENDING').length}</div>
-            <div className="stat-label">Pending</div>
+            <div className="stat-label">{t('dashboard.pending')}</div>
           </div>
           <div className="stat-card emerald">
             <div className="stat-icon"><CheckCircle size={22} /></div>
             <div className="stat-value">{items.filter(a => a.status === 'ACCEPTED').length}</div>
-            <div className="stat-label">Accepted</div>
+            <div className="stat-label">{t('dashboard.accepted')}</div>
           </div>
           <div className="stat-card rose">
             <div className="stat-icon"><XCircle size={22} /></div>
             <div className="stat-value">{items.filter(a => a.status === 'REJECTED').length}</div>
-            <div className="stat-label">Rejected</div>
+            <div className="stat-label">{t('dashboard.rejected')}</div>
           </div>
         </div>
       )}
@@ -96,12 +98,12 @@ export default function DashboardPage() {
       {isAdmin && stats && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           <div className="card">
-            <div className="card-header"><h3>Applications by Status</h3></div>
+            <div className="card-header"><h3>{t('dashboard.applicationsByStatus')}</h3></div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {[
-                { label: 'Pending', value: stats.pendingApplications, total: stats.totalApplications, color: 'var(--accent-amber)' },
-                { label: 'Accepted', value: stats.acceptedApplications, total: stats.totalApplications, color: 'var(--accent-emerald)' },
-                { label: 'Rejected', value: stats.rejectedApplications, total: stats.totalApplications, color: 'var(--accent-rose)' },
+                { label: t('dashboard.pending'), value: stats.pendingApplications, total: stats.totalApplications, color: 'var(--accent-amber)' },
+                { label: t('dashboard.accepted'), value: stats.acceptedApplications, total: stats.totalApplications, color: 'var(--accent-emerald)' },
+                { label: t('dashboard.rejected'), value: stats.rejectedApplications, total: stats.totalApplications, color: 'var(--accent-rose)' },
               ].map(item => (
                 <div key={item.label}>
                   <div className="flex justify-between mb-1" style={{ fontSize: '0.825rem' }}>
@@ -116,13 +118,13 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="card">
-            <div className="card-header"><h3>Platform Overview</h3></div>
+            <div className="card-header"><h3>{t('dashboard.platformStats')}</h3></div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {[
-                { label: 'Total Users', value: stats.totalUsers, icon: <Users size={16} /> },
-                { label: 'Total Job Offers', value: stats.totalJobOffers, icon: <Briefcase size={16} /> },
-                { label: 'Active Offers', value: stats.activeJobOffers, icon: <TrendingUp size={16} /> },
-                { label: 'Total Interviews', value: stats.totalInterviews, icon: <Calendar size={16} /> },
+                { label: t('dashboard.totalUsers'), value: stats.totalUsers, icon: <Users size={16} /> },
+                { label: t('dashboard.totalJobOffers'), value: stats.totalJobOffers, icon: <Briefcase size={16} /> },
+                { label: t('dashboard.activeOffers'), value: stats.activeJobOffers, icon: <TrendingUp size={16} /> },
+                { label: t('dashboard.totalInterviews'), value: stats.totalInterviews, icon: <Calendar size={16} /> },
               ].map(item => (
                 <div key={item.label} className="flex items-center justify-between" style={{ padding: '0.5rem 0', borderBottom: '1px solid var(--border-primary)' }}>
                   <div className="flex items-center gap-sm" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{item.icon} {item.label}</div>
@@ -137,16 +139,16 @@ export default function DashboardPage() {
       {(isRecruiter || isCandidate) && items.length > 0 && (
         <div className="card mt-2">
           <div className="card-header">
-            <h3>{isCandidate ? 'Recent Applications' : 'Latest Applications'}</h3>
+            <h3>{isCandidate ? t('dashboard.recentApplications') : t('dashboard.latestApplications')}</h3>
           </div>
           <div className="table-container" style={{ border: 'none' }}>
             <table>
               <thead>
                 <tr>
-                  <th>Job Title</th>
-                  {isRecruiter && <th>Candidate</th>}
-                  <th>Status</th>
-                  <th>Date</th>
+                  <th>{t('dashboard.jobTitle')}</th>
+                  {isRecruiter && <th>{t('dashboard.candidate')}</th>}
+                  <th>{t('dashboard.status')}</th>
+                  <th>{t('dashboard.date')}</th>
                 </tr>
               </thead>
               <tbody>

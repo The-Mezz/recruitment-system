@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLang } from '../../context/LanguageContext';
 import { searchJobOffers } from '../../api/axios';
-import { Search, MapPin, Building, DollarSign, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, MapPin, Building, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function JobListPage() {
   const { isRecruiter } = useAuth();
+  const { t } = useLang();
   const navigate = useNavigate();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -38,12 +40,12 @@ export default function JobListPage() {
     <>
       <div className="page-header flex justify-between items-center">
         <div>
-          <h1>Job Offers</h1>
-          <p>Discover your next career opportunity</p>
+          <h1>{t('jobs.title')}</h1>
+          <p>{t('jobs.subtitle')}</p>
         </div>
         {isRecruiter && (
           <button className="btn btn-primary" onClick={() => navigate('/jobs/new')}>
-            <Plus size={18} /> Post New Job
+            <Plus size={18} /> {t('jobs.postNew')}
           </button>
         )}
       </div>
@@ -51,12 +53,12 @@ export default function JobListPage() {
       <form className="search-bar" onSubmit={handleSearch}>
         <div className="search-input-wrapper">
           <Search size={16} className="search-icon" />
-          <input type="text" placeholder="Search job titles..." value={filters.title} onChange={e => handleFilterChange('title', e.target.value)} />
+          <input type="text" placeholder={t('jobs.searchPlaceholder')} value={filters.title} onChange={e => handleFilterChange('title', e.target.value)} />
         </div>
         <div className="filter-group">
-          <input type="text" className="form-input" placeholder="Location" value={filters.location} onChange={e => handleFilterChange('location', e.target.value)} style={{ width: 150 }} />
+          <input type="text" className="form-input" placeholder={t('jobs.location')} value={filters.location} onChange={e => handleFilterChange('location', e.target.value)} style={{ width: 150 }} />
           <select className="form-select" value={filters.contractType} onChange={e => handleFilterChange('contractType', e.target.value)} style={{ width: 140 }}>
-            <option value="">All Types</option>
+            <option value="">{t('jobs.allTypes')}</option>
             <option value="CDI">CDI</option>
             <option value="CDD">CDD</option>
             <option value="Freelance">Freelance</option>
@@ -64,7 +66,7 @@ export default function JobListPage() {
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
           </select>
-          <button type="submit" className="btn btn-primary">Search</button>
+          <button type="submit" className="btn btn-primary">{t('jobs.search')}</button>
         </div>
       </form>
 
@@ -73,8 +75,8 @@ export default function JobListPage() {
       ) : jobs.length === 0 ? (
         <div className="empty-state">
           <div className="empty-icon">💼</div>
-          <h3>No job offers found</h3>
-          <p>Try adjusting your search filters</p>
+          <h3>{t('jobs.noResults')}</h3>
+          <p>{t('jobs.adjustFilters')}</p>
         </div>
       ) : (
         <>
@@ -83,7 +85,7 @@ export default function JobListPage() {
               <div key={job.id} className="job-card" onClick={() => navigate(`/jobs/${job.id}`)}>
                 <div className="flex justify-between items-center mb-1">
                   <span className={`badge ${job.isActive ? 'badge-active' : 'badge-cancelled'}`}>
-                    {job.isActive ? 'Active' : 'Closed'}
+                    {job.isActive ? t('jobs.active') : t('jobs.closed')}
                   </span>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     {new Date(job.postedDate).toLocaleDateString()}
@@ -91,12 +93,12 @@ export default function JobListPage() {
                 </div>
                 <div className="job-title">{job.title}</div>
                 <div className="job-meta">
-                  <span><MapPin size={14} /> {job.location || 'Remote'}</span>
-                  <span><Building size={14} /> {job.contractType || 'N/A'}</span>
+                  <span><MapPin size={14} /> {job.location || t('jobs.remote')}</span>
+                  <span><Building size={14} /> {job.contractType || t('common.na')}</span>
                 </div>
                 <div className="job-description">{job.description}</div>
                 <div className="job-footer">
-                  <span className="job-salary">{job.salary ? `$${Number(job.salary).toLocaleString()}` : 'Negotiable'}</span>
+                  <span className="job-salary">{job.salary ? `$${Number(job.salary).toLocaleString()}` : t('jobs.negotiable')}</span>
                   <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)' }}>by {job.recruiterName}</span>
                 </div>
               </div>
@@ -105,11 +107,11 @@ export default function JobListPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-2" style={{ padding: '1rem 0' }}>
               <button className="btn btn-secondary btn-sm" disabled={filters.page === 0} onClick={() => handleFilterChange('page', filters.page - 1)}>
-                <ChevronLeft size={16} /> Previous
+                <ChevronLeft size={16} /> {t('jobs.previous')}
               </button>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Page {filters.page + 1} of {totalPages}</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{t('jobs.page')} {filters.page + 1} {t('jobs.of')} {totalPages}</span>
               <button className="btn btn-secondary btn-sm" disabled={filters.page >= totalPages - 1} onClick={() => handleFilterChange('page', filters.page + 1)}>
-                Next <ChevronRight size={16} />
+                {t('jobs.next')} <ChevronRight size={16} />
               </button>
             </div>
           )}
